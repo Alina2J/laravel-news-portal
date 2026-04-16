@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MainController;
 
 // Главная страница портала
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/', [MainController::class, 'index']);
+
+// Маршрут для галереи с параметром имени картинки
+Route::get('/gallery/{img}', [MainController::class, 'showGallery'])->name('gallery');
 
 // Информация о редакции
 Route::get('/about', function () {
