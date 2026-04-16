@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ArticleController;
 
 // Главная страница портала
 Route::get('/', [MainController::class, 'index']);
@@ -15,6 +16,9 @@ Route::get('/signin', [AuthController::class, 'create']);
 
 // Принять данные формы регистрации (POST)
 Route::post('/signin', [AuthController::class, 'registration']);
+
+// Страница новостей
+Route::get('/news', [ArticleController::class, 'index']);
 
 // Информация о редакции
 Route::get('/about', function () {

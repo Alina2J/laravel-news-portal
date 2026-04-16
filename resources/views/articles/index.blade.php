@@ -1,13 +1,13 @@
 @extends('layouts.main')
 
 @section('content')
-    <h1 style="text-align: center; margin-bottom: 30px;">Свежие новости</h1>
+    <h1 style="text-align: center; margin-bottom: 30px;">Лента новостей</h1>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
         @foreach($articles as $article)
             <div style="background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
 
-                {{-- Картинка-ссылка (Галерея) --}}
+                {{-- Изображение --}}
                 <div style="height: 200px; overflow: hidden; background: #f0f0f0;">
                     <a href="{{ route('gallery', ['img' => $article['full_image']]) }}" title="Посмотреть оригинал">
                         <img src="{{ asset('images/' . $article['preview_image']) }}"
@@ -16,21 +16,16 @@
                     </a>
                 </div>
 
-                {{-- Контент --}}
+                {{-- Контент карточки --}}
                 <div style="padding: 15px; flex: 1; display: flex; flex-direction: column;">
-                    <span style="color: #666; font-size: 0.85rem;">{{ $article['date'] }}</span>
-
-                    <h3 style="margin: 10px 0; font-size: 1.2rem; color: #1a1a1a; line-height: 1.4;">
-                        {{ $article['name'] }}
-                    </h3>
-
-                    <p style="color: #444; font-size: 0.95rem; flex: 1; line-height: 1.5;">
-                        {{ $article['shortDesc'] ?? mb_strimwidth($article['desc'], 0, 100, "...") }}
+                    <span style="color: #666; font-size: 0.85rem;">{{ $article->date }}</span>
+                    <h3 style="margin: 10px 0; color: #1a1a1a;">{{ $article->name }}</h3>
+                    <p style="color: #444; font-size: 0.95rem; flex: 1;">
+                        {{ $article->shortDesc ?? mb_strimwidth($article->desc, 0, 120, "...") }}
                     </p>
 
-                    <a href="{{ route('gallery', ['img' => $article['full_image']]) }}"
-                       style="display: inline-block; margin-top: 15px; color: #ff4500; font-weight: bold; text-decoration: none; font-size: 0.9rem;">
-                        Открыть галерею →
+                    <a href="{{ route('gallery', ['img' => $article['full_image']]) }}" style="display: inline-block; margin-top: 15px; color: #ff4500; font-weight: bold; text-decoration: none;">
+                        Читать далее →
                     </a>
                 </div>
             </div>
