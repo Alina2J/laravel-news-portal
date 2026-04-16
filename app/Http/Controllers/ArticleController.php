@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Mail\ArticleCreatedMail;
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\VeryLongJob;
 
 class ArticleController extends Controller
 {
@@ -59,7 +60,8 @@ class ArticleController extends Controller
         $moderator = User::where('role_id', 1)->first();
 
         if ($moderator) {
-            Mail::to($moderator->email)->send(new ArticleCreatedMail($article));
+            // Вместо Mail::send пишем:
+            VeryLongJob::dispatch($article, $moderator->email);
         }
 
         return redirect()->route('articles.index')->with('success', 'Статья создана и уведомление отправлено!');
