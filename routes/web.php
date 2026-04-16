@@ -5,27 +5,17 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 
-// Главная страница портала
-Route::get('/', [MainController::class, 'index']);
+/*
+|--------------------------------------------------------------------------
+| Публичные маршруты (Доступны всем)
+|--------------------------------------------------------------------------
+*/
 
-// Маршрут для галереи с параметром имени картинки
+Route::get('/', [MainController::class, 'index']);
+Route::get('/about', fn() => view('about'));
 Route::get('/gallery/{img}', [MainController::class, 'showGallery'])->name('gallery');
 
-// Показать страницу регистрации (GET)
-Route::get('/signin', [AuthController::class, 'create']);
-
-// Принять данные формы регистрации (POST)
-Route::post('/signin', [AuthController::class, 'registration']);
-
-// Страницы новостей
-Route::resource('articles', ArticleController::class);
-
-// Информация о редакции
-Route::get('/about', function () {
-    return view('about');
-});
-
-// Контакты с передачей массива
+// Контакты
 Route::get('/contacts', function () {
     $newsContacts = [
         'Редакция' => 'г. Москва, ул. Пресс-центр, д. 5',
@@ -34,6 +24,46 @@ Route::get('/contacts', function () {
         'Техподдержка' => 'support@newsportal.ru',
         'Telegram' => '@news_portal_live'
     ];
-
     return view('contacts', ['data' => $newsContacts]);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Защищенные маршруты (Только для авторизованных: middleware 'auth')
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Выход из системы
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Опасные операции с новостями (Создание, Редактирование, Удаление)
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+});
+
+// Просмотр новостей доступен всем гостям
+Route::get('/news', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+
+/*
+|--------------------------------------------------------------------------
+| Маршруты Авторизации (Только для гостей: middleware 'guest')
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('guest')->group(function () {
+    // Регистрация
+    Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+
+    // Вход
+    Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+

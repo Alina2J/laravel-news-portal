@@ -6,7 +6,7 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; color: #333; }
         header { background: #1a1a1a; color: #fff; padding: 1rem 2rem; }
-        nav { display: flex; gap: 20px; }
+        nav { display: flex; gap: 20px; justify-content: space-between}
         nav a { color: #fff; text-decoration: none; font-weight: bold; }
         nav a:hover { color: #ff4500; }
         main { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
@@ -78,13 +78,25 @@
 </head>
 <body>
     <header>
-        <nav>
-            <a href="/">Главная</a>
-            <a href="{{ route('articles.index') }}">Новости</a>
-            <a href="/about">О нас</a>
-            <a href="/contacts">Контакты</a>
-            <a href="/signin">Регистрация</a>
-            <a href="{{ route('articles.create') }}" style="color: #ff4500;">+ Добавить статью</a>
+       <nav>
+            <div style="display: flex; gap: 10px;">
+                <a href="/">Главная</a>
+                <a href="/news">Новости</a>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                @auth
+                    <a href="{{ route('articles.create') }}" style="color: #ff4500;">+ Добавить</a>
+                    <span style="color: #ccc; margin-left: 15px;">Привет, {{ Auth::user()->name }}!</span>
+                    <form action="{{ route('logout') }}" method="POST" style="display:inline; margin-left:10px;">
+                        @csrf
+                        <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">Выход</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}">Войти</a>
+                    <a href="{{ route('register') }}">Регистрация</a>
+                @endauth
+            </div>
         </nav>
     </header>
 

@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use App\Models\Article;
 
 class MainController extends Controller
 {
     public function index()
     {
         // Читаем файл из папки public
-        $json = File::get(public_path('articles.json'));
-        $articles = json_decode($json, true);
+        $articles = Article::latest()->take(6)->get();
 
         return view('home', ['articles' => $articles]);
     }
