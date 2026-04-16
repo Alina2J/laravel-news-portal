@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Mail\ArticleCreatedMail;
+use Illuminate\Support\Facades\Mail;
 
 class ArticleController extends Controller
 {
@@ -50,9 +53,16 @@ class ArticleController extends Controller
         }
 
         // 3. Создание записи в базе
-        Article::create($data);
+        $article = Article::create($data);
 
-        return redirect()->route('articles.index');
+        // 4. Находим почту модератора
+        $moderator = User::where('role_id', 1)->first();
+
+        if ($moderator) {
+            Mail::to($moderator->email)->send(new ArticleCreatedMail($article));
+        }
+
+        return redirect()->route('articles.index')->with('success', 'Статья создана и уведомление отправлено!');
     }
 
     // 4. Просмотр одной новости

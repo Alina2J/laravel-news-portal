@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin Moderator',
-            'email' => 'mod@news.ru',
+            'email' => 'i@yourgodforever.ru',
             'password' => Hash::make('admin'),
             'role_id' => 1, // ID роли moderator
         ]);
