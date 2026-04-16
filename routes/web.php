@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Models\Article;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +30,7 @@ Route::get('/contacts', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Защищенные маршруты (Только для авторизованных: middleware 'auth')
+| Защищенные маршруты (Middleware 'auth:sanctum' + Policies)
 |--------------------------------------------------------------------------
 */
 
@@ -37,33 +38,55 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Выход из системы
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Добавление комментариев
+    Route::post('/articles/{article}/comments', [ArticleController::class, 'storeComment'])->name('comments.store');
+    // Удаление комментария с проверкой политики
+    Route::delete('/comments/{comment}', [ArticleController::class, 'destroyComment'])
+        ->name('comments.destroy')
+        ->can('delete', 'comment'); // 'delete' — метод в Policy, 'comment' — имя параметра из пути
 
-    // Опасные операции с новостями (Создание, Редактирование, Удаление)
-    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
-    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
-    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    /* Операции для Модератора (Проверка через ArticlePolicy) */
+
+    // Создание
+    Route::get('/articles/create', [ArticleController::class, 'create'])
+        ->name('articles.create')
+        ->can('create', Article::class); // Проверка ArticlePolicy@create
+
+    Route::post('/articles', [ArticleController::class, 'store'])
+        ->name('articles.store')
+        ->can('create', Article::class);
+
+    // Редактирование и удаление (привязка к конкретному объекту {article})
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])
+        ->name('articles.edit')
+        ->can('update', 'article'); // Проверка ArticlePolicy@update
+
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])
+        ->name('articles.update')
+        ->can('update', 'article');
+
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])
+        ->name('articles.destroy')
+        ->can('delete', 'article');
 });
 
-// Просмотр новостей доступен всем гостям
+/*
+|--------------------------------------------------------------------------
+| Публичный просмотр новостей
+|--------------------------------------------------------------------------
+*/
 Route::get('/news', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
 /*
 |--------------------------------------------------------------------------
-| Маршруты Авторизации (Только для гостей: middleware 'guest')
+| Маршруты Авторизации (middleware 'guest')
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('guest')->group(function () {
-    // Регистрация
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 
-    // Вход
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
-
-

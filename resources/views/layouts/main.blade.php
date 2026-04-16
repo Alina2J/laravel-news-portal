@@ -86,7 +86,9 @@
 
             <div style="display: flex; gap: 10px;">
                 @auth
-                    <a href="{{ route('articles.create') }}" style="color: #ff4500;">+ Добавить</a>
+                    @can('create', App\Models\Article::class)
+                        <a href="{{ route('articles.create') }}" style="color: #ff4500;">+ Добавить статью</a>
+                    @endcan
                     <span style="color: #ccc; margin-left: 15px;">Привет, {{ Auth::user()->name }}!</span>
                     <form action="{{ route('logout') }}" method="POST" style="display:inline; margin-left:10px;">
                         @csrf

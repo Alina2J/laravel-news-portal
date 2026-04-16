@@ -9,7 +9,7 @@
 
                 {{-- Изображение --}}
                 <div style="height: 200px; overflow: hidden; background: #f0f0f0;">
-                    <a href="{{ route('gallery', ['img' => $article['full_image']]) }}" title="Посмотреть оригинал">
+                    <a href="{{ route('articles.show', $article->id) }}" title="Посмотреть оригинал">
                         <img src="{{ asset('images/' . $article['preview_image']) }}"
                              alt="{{ $article['name'] }}"
                              style="width: 100%; height: 100%; object-fit: cover; display: block;">
@@ -24,24 +24,26 @@
                         {{ $article->shortDesc ?? mb_strimwidth($article->desc, 0, 120, "...") }}
                     </p>
 
-                    <a href="{{ route('gallery', ['img' => $article['full_image']]) }}" style="display: inline-block; margin-top: 15px; color: #ff4500; font-weight: bold; text-decoration: none;">
+                    <a href="{{ route('articles.show', $article->id) }}" style="display: inline-block; margin-top: 15px; color: #ff4500; font-weight: bold; text-decoration: none;">
                         Читать далее →
                     </a>
                 </div>
 
-                {{-- БЛОК УПРАВЛЕНИЯ: Виден только авторизованным --}}
+                {{-- БЛОК УПРАВЛЕНИЯ: Виден только модераторам --}}
                 @auth
-                    <div style="margin-top: 15px; display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                        {{-- Кнопка Редактировать --}}
-                        <a href="{{ route('articles.edit', $article->id) }}" style="color: #444; text-decoration: none; font-size: 0.8rem; border: 1px solid #ccc; padding: 3px 8px; border-radius: 4px;">⚙ Редактировать</a>
+                    @can('update', $article)
+                        <div style="margin-top: 15px; display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                            {{-- Кнопка Редактировать --}}
+                            <a href="{{ route('articles.edit', $article->id) }}" style="color: #444; text-decoration: none; font-size: 0.8rem; border: 1px solid #ccc; padding: 3px 8px; border-radius: 4px;">⚙ Редактировать</a>
 
-                        {{-- Кнопка Удалить (через форму, так как это DELETE запрос) --}}
-                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Вы уверены?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="color: #ff4500; background: none; border: 1px solid #ff4500; cursor: pointer; font-size: 0.8rem; padding: 3px 8px; border-radius: 4px;">🗑 Удалить</button>
-                        </form>
-                    </div>
+                            {{-- Кнопка Удалить (через форму, так как это DELETE запрос) --}}
+                            <form action="{{ route('articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Вы уверены?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="color: #ff4500; background: none; border: 1px solid #ff4500; cursor: pointer; font-size: 0.8rem; padding: 3px 8px; border-radius: 4px;">🗑 Удалить</button>
+                            </form>
+                        </div>
+                    @endcannot
                 @endauth
             </div>
         @endforeach

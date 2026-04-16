@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -97,5 +98,25 @@ class ArticleController extends Controller
     {
         $article->delete();
         return redirect()->route('articles.index')->with('success', 'Новость удалена!');
+    }
+
+    public function storeComment(Request $request, Article $article)
+    {
+        $request->validate(['text' => 'required|min:3']);
+
+        \App\Models\Comment::create([
+            'article_id' => $article->id,
+            'user_id' => $request->user()->id,
+            'text' => $request->text,
+        ]);
+
+        return back()->with('success', 'Комментарий добавлен!');
+    }
+
+    public function destroyComment(Comment $comment)
+    {
+        $comment->delete();
+
+        return back()->with('success', 'Комментарий удален.');
     }
 }
