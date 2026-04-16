@@ -17,8 +17,8 @@ Route::get('/signin', [AuthController::class, 'create']);
 // Принять данные формы регистрации (POST)
 Route::post('/signin', [AuthController::class, 'registration']);
 
-// Страница новостей
-Route::get('/news', [ArticleController::class, 'index']);
+// Страницы новостей
+Route::resource('articles', ArticleController::class);
 
 // Информация о редакции
 Route::get('/about', function () {

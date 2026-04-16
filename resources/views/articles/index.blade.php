@@ -28,7 +28,22 @@
                         Читать далее →
                     </a>
                 </div>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                    {{-- Кнопка Редактировать --}}
+                    <a href="{{ route('articles.edit', $article->id) }}" style="color: #444; text-decoration: none; font-size: 0.8rem; border: 1px solid #ccc; padding: 3px 8px; border-radius: 4px;">⚙ Редактировать</a>
+
+                    {{-- Кнопка Удалить (через форму, так как это DELETE запрос) --}}
+                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Вы уверены?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="color: #ff4500; background: none; border: 1px solid #ff4500; cursor: pointer; font-size: 0.8rem; padding: 3px 8px; border-radius: 4px;">🗑 Удалить</button>
+                    </form>
+                </div>
             </div>
         @endforeach
+    </div>
+    <div style="margin-top: 40px;">
+        {{ $articles->links() }}
     </div>
 @endsection
