@@ -8,6 +8,7 @@ use App\Policies\ArticlePolicy;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Article;
 use App\Models\Comment;
+use App\Models\User;
 use App\Policies\CommentPolicy;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,6 +37,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::policy(Comment::class, CommentPolicy::class);
+
+        Gate::define('view-admin-panel', function (User $user) {
+            // Доступ разрешен только если role_id пользователя равен 1 (модератор/админ)
+            return $user->role_id === 1;
+        });
 
         Paginator::useBootstrapFive();
     }

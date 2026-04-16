@@ -68,6 +68,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])
         ->name('articles.destroy')
         ->can('delete', 'article');
+
+    Route::middleware(['auth', 'can:view-admin-panel'])->group(function () {
+    Route::get('/moderation/comments', [ArticleController::class, 'commentIndex'])->name('comments.index');
+    Route::patch('/moderation/comments/{comment}/approve', [ArticleController::class, 'approveComment'])->name('comments.approve');
+});
 });
 
 /*

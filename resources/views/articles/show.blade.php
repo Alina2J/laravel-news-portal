@@ -19,8 +19,12 @@
 
     {{-- СЕКЦИЯ КОММЕНТАРИЕВ --}}
     <section>
-        <h3>Комментарии ({{ $article->comments->count() }})</h3>
-
+        <h3>Комментарии ({{ $article->comments->where('is_approved', true)->count() }})</h3>
+        @if(session('success'))
+            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                {{ session('success') }}
+            </div>
+        @endif
         @auth
             <form action="{{ route('comments.store', $article->id) }}" method="POST" style="margin-bottom: 30px;">
                 @csrf
@@ -36,7 +40,7 @@
         @endauth
 
         <div style="display: flex; flex-direction: column; gap: 20px;">
-            @foreach($article->comments->sortByDesc('created_at') as $comment)
+            @foreach($article->comments->where('is_approved', true) as $comment)
                 <div style="background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 8px; position: relative; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <strong>{{ $comment->user->name }}</strong>

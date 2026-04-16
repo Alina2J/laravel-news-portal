@@ -118,9 +118,10 @@ class ArticleController extends Controller
             'article_id' => $article->id,
             'user_id' => $request->user()->id,
             'text' => $request->text,
+            'is_approved' => false,
         ]);
 
-        return back()->with('success', 'Комментарий добавлен!');
+        return back()->with('success', 'Ваш комментарий отправлен на модерацию и появится после проверки.');
     }
 
     public function destroyComment(Comment $comment)
@@ -128,5 +129,16 @@ class ArticleController extends Controller
         $comment->delete();
 
         return back()->with('success', 'Комментарий удален.');
+    }
+
+    public function commentIndex() {
+        // Берем только те, где is_approved = false
+        $comments = Comment::where('is_approved', false)->latest()->get();
+        return view('comments.index', compact('comments'));
+    }
+
+    public function approveComment(Comment $comment) {
+        $comment->update(['is_approved' => true]);
+        return back()->with('success', 'Комментарий одобрен.');
     }
 }

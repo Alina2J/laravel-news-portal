@@ -89,6 +89,12 @@
                     @can('create', App\Models\Article::class)
                         <a href="{{ route('articles.create') }}" style="color: #ff4500;">+ Добавить статью</a>
                     @endcan
+                    @can('view-admin-panel')
+                        <a class="nav-link" href="{{ route('comments.index') }}">
+                            Модерация комментов
+                            <span class="badge bg-danger">{{ \App\Models\Comment::where('is_approved', false)->count() }}</span>
+                        </a>
+                    @endcan
                     <span style="color: #ccc; margin-left: 15px;">Привет, {{ Auth::user()->name }}!</span>
                     <form action="{{ route('logout') }}" method="POST" style="display:inline; margin-left:10px;">
                         @csrf
